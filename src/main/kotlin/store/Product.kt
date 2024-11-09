@@ -20,8 +20,8 @@ class Product(
     }
     override fun toString(): String {
         if(quantity == 0){
-            return "$name ${String.format("%,d", price)}원 재고 없음"
+            return "- $name ${String.format("%,d", price)}원 재고 없음"
         }
-        return "$name ${String.format("%,d", price)}원 ${quantity}개 ${promotion?.let { "$it" } ?: ""}"
+        return "- $name ${String.format("%,d", price)}원 ${quantity}개 ${promotion?.let { "$it" } ?: ""}"
     }
 }
