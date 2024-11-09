@@ -1,5 +1,6 @@
 package store
 
+import camp.nextstep.edu.missionutils.Console
 import java.io.File
 
 fun main() {
@@ -21,5 +22,18 @@ fun main() {
             "현재 보유하고 있는 상품입니다.\n")
     products.forEach { println(it.toString()) }
 
+    //4. 구매할 상품명과 수량 입력받기
+    val input = Console.readLine()
+
+
 
 }
+
+fun parseInput(input: String): List<Pair<String, Int>> {
+    return input.split(",").map {
+        val cleaned = it.removeSurrounding("[","]")
+        val (name, quantity) = cleaned.split("-")
+        name to quantity.toInt()
+    }
+}
+
