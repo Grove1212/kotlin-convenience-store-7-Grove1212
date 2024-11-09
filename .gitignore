@@ -4,8 +4,6 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**
 !**/src/test/**
-src/main/kotlin/store/PromotionChecker.kt
-src/test/kotlin/store/PromotionCheckerTest.kt
 
 ### STS ###
 .apt_generated
