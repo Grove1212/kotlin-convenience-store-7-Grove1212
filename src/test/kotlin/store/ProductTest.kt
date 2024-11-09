@@ -33,7 +33,7 @@ class ProductTest {
     @Test
     fun `고객이 상품을 재고보다 많이 구매하면 에러 발생`() {
         val count = 12
-        assertThrows<IllegalArgumentException> {
+        assertThrows<IllegalStateException> {
             product.purchase(count)
         }
     }
