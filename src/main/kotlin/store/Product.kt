@@ -4,7 +4,7 @@ class Product(
     private val name: String,
     private val price: Int,
     private val quantity: Int,
-    private val promotion: String?
+    val promotion: String?
 ) {
     constructor(line: String) : this(
         name = line.split(",")[0],
