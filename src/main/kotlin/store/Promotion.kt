@@ -17,6 +17,8 @@ class Promotion(
         endDate = line.split(",")[4]
     )
 
-    fun isEligibleForPromotion(product: Product) = product.promotion == name
+    fun isEqualTo(product: Product) = product.promotion == name
     fun isPromotionOngoing() = DateTimes.now().toString() in startDate..endDate
+    fun isEligibleForPromotion(product: Product) = isEqualTo(product) && isPromotionOngoing()
+
 }

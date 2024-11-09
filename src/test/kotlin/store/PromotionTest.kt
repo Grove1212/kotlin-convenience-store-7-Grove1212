@@ -16,17 +16,23 @@ class PromotionTest {
     @Test
     fun `Product가 해당 프로모션 할인 상품인 경우 true 반환`() {
         val product = Product("콜라,1000,10,탄산2+1")
-        assertEquals(promotion.isEligibleForPromotion(product), true)
+        assertEquals(promotion.isEqualTo(product), true)
     }
 
     @Test
     fun `Product가 해당 프로모션 할인 상품이 아닌 경우 false 반환`() {
         val product = Product("콜라,1000,10,null")
-        assertEquals(promotion.isEligibleForPromotion(product), false)
+        assertEquals(promotion.isEqualTo(product), false)
     }
 
     @Test
     fun `오늘 날짜가 프로모션 기간인 경우 true 반환`(){
         assertEquals(promotion.isPromotionOngoing(), true)
+    }
+
+    @Test
+    fun `해당 상품이 프로모션 대상인 경우 true 반환`() {
+        val product = Product("콜라,1000,10,탄산2+1")
+        assertEquals(promotion.isEligibleForPromotion(product), true)
     }
 }
