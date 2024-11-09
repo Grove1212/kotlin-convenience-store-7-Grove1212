@@ -14,5 +14,8 @@ class Product(
     )
 
     fun checkPayable(count: Int): Boolean = count > quantity
-
+    fun purchase(count: Int): Int {
+        require(!checkPayable(count)) {throw IllegalArgumentException("[ERROR] 재고 부족으로 주문 불가합니다. 재고: ${quantity}")}
+        return  quantity - count
+    }
 }
