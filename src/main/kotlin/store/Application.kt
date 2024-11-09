@@ -16,6 +16,9 @@ fun main() {
         lines.map { Promotion(it) }.toList()
     }
 
+    //3. 프로그램 시작 문구 출력
+    println("안녕하세요. Grove1212편의점입니다.\n" +
+            "현재 보유하고 있는 상품입니다.")
 
 
 }
