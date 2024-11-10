@@ -3,7 +3,7 @@ package store
 import camp.nextstep.edu.missionutils.DateTimes
 
 class Promotion(
-    private val name: String,
+    val name: String,
     private val buy: Int,
     private val get: Int,
     private val startDate: String,
@@ -17,8 +17,8 @@ class Promotion(
         endDate = line.split(",")[4]
     )
 
-    fun isEqualTo(product: Product) = product.promotion == name
-    fun isPromotionOngoing() = DateTimes.now().toString() in startDate..endDate
+    private fun isEqualTo(product: Product) = product.promotion == name
+    private fun isPromotionOngoing() = DateTimes.now().toString() in startDate..endDate
     fun isEligibleForPromotion(product: Product) = isEqualTo(product) && isPromotionOngoing()
-
+    fun canGetOneMoreProductsForFree(quantity:Int) = (quantity % (buy+get)) == buy
 }
