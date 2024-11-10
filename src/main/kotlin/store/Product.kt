@@ -20,12 +20,11 @@ class Product(
     }
 
     fun purchase(count: Int) {
-        require(countLackOfStock(count) != 0) { throw IllegalStateException("[ERROR] ${name}의 재고 수량(${quantity})을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.") }
+        require(countLackOfStock(count) == 0) { throw IllegalStateException("[ERROR] ${name}의 재고 수량(${quantity})을 초과하여 구매할 수 없습니다. 다시 입력해 주세요: ${count}") }
         quantity -= count
     }
 
     fun calculatePurchasedAmount(count: Int): Int {
-        purchase(count)
         return price * count
     }
 

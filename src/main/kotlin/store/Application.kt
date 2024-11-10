@@ -94,7 +94,21 @@ fun main() {
     // 10. 최종 구매액 구하기
     val totalPurchaseAmount = purchaseAmount - discountedAmount - membershipDiscount
 
-
+    //11. 영수증 만들어서 출력
+    println("==============W 편의점================")
+    println("상품명\t\t수량\t금액")
+    println(purchaseProducts.toString()) // 하면 영수증용 상품명, 수량, 금액 리턴
+    println("=============증\t정===============")
+    purchaseProducts.forEach { (product, quantity) ->
+        val promotion = promotions.find { it.isEligibleForPromotion(product) }
+        val promotionQuantity = promotion?.calculateNumberOfPromotionProduct(quantity) ?: 0
+        println("${product.name}\t${promotionQuantity}")
+    }
+    println("====================================")
+    println("총구매액\t\t__\t${String.format("%,d",purchaseAmount)}\n" +
+            "행사할인\t\t\t-${String.format("%,d",discountedAmount)}\n" +
+            "멤버십할인\t\t\t-${String.format("%,d",membershipDiscount)}\n" +
+            "내실돈\t\t\t ${String.format("%,d",totalPurchaseAmount)}")
 }
 
 fun parseInput(input: String, products: List<Product>): MutableList<Pair<Product, Int>> {
