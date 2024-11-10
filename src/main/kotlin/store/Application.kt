@@ -91,6 +91,8 @@ fun main() {
         }
     }
 
+    // 10. 최종 구매액 구하기
+    val totalPurchaseAmount = purchaseAmount - discountedAmount - membershipDiscount
 
 
 }
