@@ -3,8 +3,8 @@ package store
 import java.io.File
 
 class CashRegister(
-    private val products: List<Product> = loadProducts(),
-    private val promotions: List<Promotion> = loadPromotions()
+    val products: List<Product> = loadProducts(),
+    val promotions: List<Promotion> = loadPromotions()
 ) {
     companion object {
         private const val PRODUCTSPATH = "src/main/resources/products.md"

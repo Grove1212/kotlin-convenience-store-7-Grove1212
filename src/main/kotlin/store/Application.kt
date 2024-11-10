@@ -7,13 +7,12 @@ fun main() {
     // TODO: 프로그램 구현
     //1. 파일 가져오기
     val cashRegister = CashRegister()
+    val inputView = InputView()
+    val outputView = OutputView()
 
     //3. 프로그램 시작 문구 출력
-    println(
-        "안녕하세요. Grove1212편의점입니다.\n" +
-                "현재 보유하고 있는 상품입니다.\n"
-    )
-    products.forEach { println(it.toString()) }
+    outputView.displayProductInfo(cashRegister.products)
+
 
     //4. 구매할 상품명과 수량 입력받기
     println("\n구매할 상품명과 수량을 입력하세요 (예: [콜라-3],[에너지바-5]):")
