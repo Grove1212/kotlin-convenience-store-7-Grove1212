@@ -3,23 +3,8 @@ package store
 import java.io.File
 
 class CashRegister(
-    val products: List<Product> = loadProducts(),
-    val promotions: List<Promotion> = loadPromotions()
+    val products: List<Product>,
+    val promotions: List<Promotion>
 ) {
-    companion object {
-        private const val PRODUCTSPATH = "src/main/resources/products.md"
-        private const val PROMOTIONSPATH = "src/main/resources/promotions.md"
 
-        private fun loadProducts(): List<Product> {
-            return File(PRODUCTSPATH).useLines { lines ->
-                lines.drop(1).map { Product(it) }.toList()
-            }
-        }
-
-        private fun loadPromotions(): List<Promotion> {
-            return File(PROMOTIONSPATH).useLines { lines ->
-                lines.drop(1).map { Promotion(it) }.toList()
-            }
-        }
-    }
 }

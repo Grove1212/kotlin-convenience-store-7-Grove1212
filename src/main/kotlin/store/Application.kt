@@ -6,9 +6,9 @@ import java.io.File
 fun main() {
     // TODO: 프로그램 구현
     //1. 파일 가져오기
-    val cashRegister = CashRegister()
     val inputView = InputView()
     val outputView = OutputView()
+    val cashRegister = CashRegister(inputView.loadProducts(), inputView.loadPromotions())
 
     //3. 프로그램 시작 문구 출력
     outputView.displayProductInfo(cashRegister.products)
