@@ -15,7 +15,7 @@ fun main() {
 
 
     //4. 구매할 상품명과 수량 입력받기
-    println("\n구매할 상품명과 수량을 입력하세요 (예: [콜라-3],[에너지바-5]):")
+    outputView.displayProductNameAndQuantity()
     val input = Console.readLine() ?: throw IllegalArgumentException("[ERROR] null값 입력")
 
     //5. 구매한 상품명과 수량 리스트로 만들기
@@ -29,7 +29,7 @@ fun main() {
 
         if (promotion != null) {
             if (promotion.canGetOneMoreProductsForFree(quantity)) {
-                println("현재 ${product.name}은(는)이 1개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)")
+                outputView.addFreeProduct(product.name)
                 if (Console.readLine() == "Y") {
                     purchaseProducts[index] = product to (quantity + 1)
                 }
@@ -37,7 +37,7 @@ fun main() {
 
             val lackOfStock = product.countLackOfStock(quantity)
             if (lackOfStock != 0) {
-                println("현재 ${lackOfStock}개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)")
+                outputView.purchaseWithoutDiscount(lackOfStock)
                 val purchaseLackOfStock = Console.readLine()
                 if (purchaseLackOfStock == "Y") {
                     purchaseProducts[index] = product to (product.quantity)
@@ -72,7 +72,7 @@ fun main() {
 
     //9. 멤버십 할인 여부 입력받기
     var membershipDiscount = 0
-    println("멤버십 할인을 받으시겠습니까? (Y/N)")
+    outputView.membershipDiscount()
     val membershipInput = Console.readLine()
     if (membershipInput == "Y") {
         membershipDiscount = ((purchaseAmount - discountedAmount) * 0.3).toInt()
@@ -85,20 +85,21 @@ fun main() {
     val totalPurchaseAmount = purchaseAmount - discountedAmount - membershipDiscount
 
     //11. 영수증 만들어서 출력
-    println("==============W 편의점================")
-    println("상품명\t\t수량\t금액")
-    println(purchaseProducts.toString()) // 하면 영수증용 상품명, 수량, 금액 리턴
-    println("=============증\t정===============")
-    purchaseProducts.forEach { (product, quantity) ->
+    val promotionItems = purchaseProducts.sumOf { (product, quantity) ->
         val promotion = promotions.find { it.isEligibleForPromotion(product) }
         val promotionQuantity = promotion?.calculateNumberOfPromotionProduct(quantity) ?: 0
-        println("${product.name}\t${promotionQuantity}")
+        "${product.name}\t${promotionQuantity}"
     }
-    println("====================================")
-    println("총구매액\t\t__\t${String.format("%,d",purchaseAmount)}\n" +
-            "행사할인\t\t\t-${String.format("%,d",discountedAmount)}\n" +
-            "멤버십할인\t\t\t-${String.format("%,d",membershipDiscount)}\n" +
-            "내실돈\t\t\t ${String.format("%,d",totalPurchaseAmount)}")
+
+    outputView.receipt(
+        purchaseProducts.toString(),
+        promotionItems,
+        __,
+        purchaseAmount,
+        discountedAmount,
+        membershipDiscount,
+        totalPurchaseAmount
+    )
 }
 
 fun parseInput(input: String, products: List<Product>): MutableList<Pair<Product, Int>> {
