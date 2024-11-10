@@ -63,14 +63,43 @@ fun main() {
         }
     }
 
-    //7. 
+    //7. 구매하기
+    purchaseProducts.forEach { (product, quantity) ->
+        product.purchase(quantity)
+    }
+
+    // 8. 총 구매액과 행사할인가 구하기
+    val purchaseAmount = purchaseProducts.sumOf { (product, quantity) ->
+        product.calculatePurchasedAmount(quantity)
+    }
+
+    val discountedAmount = purchaseProducts.sumOf { (product, quantity) ->
+        val promotion = promotions.find { it.isEligibleForPromotion(product) }
+        val promotionQuantity = promotion?.calculateNumberOfPromotionProduct(quantity) ?: 0
+        product.calculatePromotionAmount(promotionQuantity)
+    }
+
+
+    //9. 멤버십 할인 여부 입력받기
+    var membershipDiscount = 0
+    println("멤버십 할인을 받으시겠습니까? (Y/N)")
+    val membershipInput = Console.readLine()
+    if (membershipInput == "Y") {
+        membershipDiscount = ((purchaseAmount - discountedAmount) * 0.3).toInt()
+        if (membershipDiscount > 8000) {
+            membershipDiscount = 8000
+        }
+    }
+
+
+
 }
 
 fun parseInput(input: String, products: List<Product>): MutableList<Pair<Product, Int>> {
     return input.split(",").map { it ->
         val cleaned = it.removeSurrounding("[", "]")
         val (name, quantity) = cleaned.split("-")
-        val product = products.find { it.name == name && it.promotion != null && it.quantity != 0}
+        val product = products.find { it.name == name && it.promotion != null && it.quantity != 0 }
             ?: products.find { it.name == name }
             ?: throw IllegalArgumentException("[ERROR] 그런 상품은 없습니다.")
         product to quantity.toInt()

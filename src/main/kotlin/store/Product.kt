@@ -3,7 +3,7 @@ package store
 class Product(
     val name: String,
     private val price: Int,
-    val quantity: Int,
+    var quantity: Int,
     val promotion: String?
 ) {
     constructor(line: String) : this(
@@ -14,16 +14,27 @@ class Product(
     )
 
     fun countLackOfStock(count: Int): Int {
-        if(count - quantity > 0)
+        if (count - quantity > 0)
             return count - quantity
         return 0
     }
-    fun purchase(count: Int): Int {
-        require(countLackOfStock(count) != 0) {throw IllegalStateException("[ERROR] ${name}의 재고 수량(${quantity})을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.")}
-        return  quantity - count
+
+    fun purchase(count: Int) {
+        require(countLackOfStock(count) != 0) { throw IllegalStateException("[ERROR] ${name}의 재고 수량(${quantity})을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.") }
+        quantity -= count
     }
+
+    fun calculatePurchasedAmount(count: Int): Int {
+        purchase(count)
+        return price * count
+    }
+
+    fun calculatePromotionAmount(count: Int): Int {
+        return price * count
+    }
+
     override fun toString(): String {
-        if(quantity == 0){
+        if (quantity == 0) {
             return "- $name ${String.format("%,d", price)}원 재고 없음"
         }
         return "- $name ${String.format("%,d", price)}원 ${quantity}개 ${promotion?.let { "$it" } ?: ""}"
