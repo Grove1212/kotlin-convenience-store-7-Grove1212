@@ -111,7 +111,7 @@ class CashRegister(
         index: Int,
         stocks: MutableList<PurchasedStock>
     ) {
-        outputView.purchaseWithoutDiscount(stock.product.name, -stock.remainQuantity())
+        outputView.purchaseWithoutDiscount(stock.product.name, stock.countPromotionQuantity())
         val purchaseLackOfStock = inputView.getAnswerOfQuery()
         if (purchaseLackOfStock == "Y") {
             addNonPromotionalStockForShortage(stocks, stock)

@@ -5,8 +5,12 @@ class PurchasedStock(
     val product: Product,
     val promotion: Promotion? = null,
 ) {
-    fun countPromotionQuantity(): Int {
+    fun countAdditionalPromotionQuantity(): Int {
         return promotion?.calculateNumberOfPromotionProduct(buy) ?: 0
+    }
+
+    fun countPromotionQuantity(): Int {
+        return promotion?.calculateNumberOfPromotionProduct(buy) ?: 0 * (promotion?.getBundle() ?: 0)
     }
 
     fun calculatePaymentAmount(): Int {
@@ -17,7 +21,7 @@ class PurchasedStock(
         promotion?.let { 0 } ?: product.calculatePurchasedAmount(buy)
 
     fun calculatePromotionDiscountedByPayment(): Int {
-        return product.calculatePurchasedAmount(countPromotionQuantity())
+        return product.calculatePurchasedAmount(countAdditionalPromotionQuantity())
     }
 
     fun purchase() {

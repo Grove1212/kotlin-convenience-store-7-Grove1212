@@ -17,9 +17,10 @@ class Promotion(
         endDate = line.split(",")[4]
     )
 
+    fun getBundle() = buy + get
     private fun isEqualTo(product: Product) = product.promotion == name
     private fun isPromotionOngoing() = DateTimes.now().toString() in startDate..endDate
     fun isEligibleForPromotion(product: Product) = isEqualTo(product) && isPromotionOngoing()
-    fun canGetMoreProductsForFree(quantity:Int) = (quantity % (buy+get)) == buy
-    fun calculateNumberOfPromotionProduct(quantity: Int) = (quantity / (buy+get))
+    fun canGetMoreProductsForFree(quantity: Int) = (quantity % (buy + get)) == buy
+    fun calculateNumberOfPromotionProduct(quantity: Int) = (quantity / (buy + get))
 }
