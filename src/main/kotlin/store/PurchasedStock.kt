@@ -9,6 +9,14 @@ class PurchasedStock(
         return promotion?.calculateNumberOfPromotionProduct(buy) ?: 0
     }
 
+    fun calculatePaymentAmount(): Int {
+        return product.calculatePurchasedAmount(buy)
+    }
+
+    fun calculatePromotionDiscountedByPayment(): Int {
+        return product.calculatePromotionAmount(calculatePromotionAmount())
+    }
+
     fun purchase() {
         product.decreaseStock(buy)
     }

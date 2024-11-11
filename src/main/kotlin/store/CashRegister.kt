@@ -12,16 +12,29 @@ class CashRegister(
         outputView.displayProductInfo(products)
         outputView.displayProductNameAndQuantity()
         val input = inputView.getProductAndQuantity()
-        var purchaseOrder = checkOutOrder(input)
+        val purchaseOrder = checkOutOrder(input)
+        checkMembershipDiscount(purchaseOrder)
+        purchaseOrder.purchaseProducts()
+        outputView.receipt(purchaseOrder.makeReceipt())
+    }
 
+    fun checkMembershipDiscount(purchaseOrder: PurchaseOrder) {
+        outputView.membershipDiscount()
+        if (inputView.getAnswerOfQuery() == "Y") {
+            purchaseOrder.setMembershipDiscount()
+        }
     }
 
     fun checkOutOrder(input: String): PurchaseOrder {
         val productNameAndQuantity = parseInput(input)
         var purchasedStocks = changeInputToPurchaseStocks(productNameAndQuantity)
+        checkPromotion(purchasedStocks)
+        return PurchaseOrder(purchasedStocks)
+    }
+
+    fun checkPromotion(purchasedStocks: MutableList<PurchasedStock>) {
         checkAddFreeProduct(purchasedStocks)
         checkLackOfPromotionalStock(purchasedStocks)
-        return PurchaseOrder(purchasedStocks)
     }
 
     fun checkAddFreeProduct(purchasedStocks: MutableList<PurchasedStock>) {
