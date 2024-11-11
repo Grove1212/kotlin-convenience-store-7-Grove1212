@@ -30,6 +30,9 @@ class PurchasedStock(
     }
 
     fun countAdditionalPromotionProductForFree(): Boolean {
+        if (isStockLacking()) {
+            return false
+        }
         return promotion?.canGetMoreProductsForFree(buy) ?: false
     }
 
@@ -41,6 +44,6 @@ class PurchasedStock(
     }
 
     override fun toString(): String {
-        return "${product.name}\t\t${buy}\t${String.format("%,d",calculatePaymentAmount())}"
+        return "${product.name}\t\t${buy}\t${String.format("%,d", calculatePaymentAmount())}"
     }
 }
