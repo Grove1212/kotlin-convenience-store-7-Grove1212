@@ -12,7 +12,7 @@ fun main() {
     //3. 프로그램 시작 문구 출력
 
     //4. 구매할 상품명과 수량 입력받기
-    val input = Console.readLine() ?: throw IllegalArgumentException("[ERROR] null값 입력")
+    val input = inputView.getProductAndQuantity()
 
     //5. 구매한 상품명과 수량 리스트로 만들기
     val purchaseProducts = cashRegister.makePurchaseOrder(input)
@@ -27,7 +27,7 @@ fun main() {
 
         if (it.checkAddPromotionalProductForFree()) {
             outputView.addFreeProduct(it.product.name)
-            if (Console.readLine() == "Y") {
+            if (inputView.getAnswerOfQuery() == "Y") {
                 purchaseProducts[index] = it.addPromotionalProduct()
             }
         }
@@ -35,7 +35,7 @@ fun main() {
         val lackOfStock = it.checkCountLackOfStock()
         if (lackOfStock != 0) {
             outputView.purchaseWithoutDiscount(lackOfStock)
-            val purchaseLackOfStock = Console.readLine()
+            val purchaseLackOfStock = inputView.getAnswerOfQuery()
             if (purchaseLackOfStock == "Y") {
                 purchaseProducts[index] = it.setQuantityToProductQuantity()
                 val name = it.product.name
