@@ -45,20 +45,28 @@ class CashRegister(
 
     private fun checkLackOfPromotionalStock(purchasedStocks: MutableList<PurchasedStock>) {
         purchasedStocks.forEachIndexed { index, stock ->
-            if (stock.promotion == null) {
-                return@forEachIndexed
+            if (stock.isStockLacking() && stock.promotion == null) {
+                handleLackOfNonPromotionalStockPrompt(stock, index, purchasedStocks)
             }
-            if (stock.isStockLacking()) {
+            if (stock.isStockLacking() && stock.promotion != null) {
                 handleLackOfStockPrompt(stock, index, purchasedStocks)
             }
         }
     }
 
-    private fun handleLackOfStockPrompt(stock: PurchasedStock, index: Int, stocks: MutableList<PurchasedStock>) {
-        if (stock.product.quantity == 0) {
-            outputView.stockRunOut(stock.product.name)
-            stocks.removeAt(index)
+    private fun handleLackOfNonPromotionalStockPrompt(
+        stock: PurchasedStock,
+        index: Int,
+        stocks: MutableList<PurchasedStock>
+    ) {
+        outputView.purchaseOnlyProductQuantity(stock.product.quantity)
+        when (inputView.getAnswerOfQuery()) {
+            "Y" -> stocks[index] = stock.setQuantityToProductQuantity()
+            "N" -> stocks.removeAt(index)
         }
+    }
+
+    private fun handleLackOfStockPrompt(stock: PurchasedStock, index: Int, stocks: MutableList<PurchasedStock>) {
         outputView.purchaseWithoutDiscount(stock.lackingAmount())
         val purchaseLackOfStock = inputView.getAnswerOfQuery()
         if (purchaseLackOfStock == "Y") {
@@ -94,6 +102,7 @@ class CashRegister(
         if (product.quantity != 0) {
             return PurchasedStock(quantity, product, promotion)
         }
+        outputView.stockRunOut(name)
         return null
     }
 
