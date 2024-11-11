@@ -35,12 +35,12 @@ class PurchaseOrder(
         val str = mutableListOf<String>()
         str.add(purchasedStocks.map { it.toString() }.joinToString("\n"))
         str.add(purchasedStocks.filter { it.promotion != null && it.countPromotionQuantity() != 0 }
-            .map { "${it.product.name}\t${it.countPromotionQuantity()}" }
+            .map { "${it.product.name}\t\t${it.countPromotionQuantity()}" }
             .joinToString("\n"))
         str.add("${numberOfPurchasedStocks}")
         str.add("${String.format("%,d", paymentAmount)}")
         str.add("${String.format("%,d", promotionDiscount)}")
-        str.add("${String.format("%,d", membershipDiscount ?: 0)}")
+        str.add("${String.format("%,d", membershipDiscount)}")
         str.add("${String.format("%,d", totalPaymentAmount)}")
         return str
     }

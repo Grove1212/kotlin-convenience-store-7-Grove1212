@@ -3,7 +3,7 @@ package store
 class OutputView {
     fun displayProductInfo(products: List<Product>) {
         println(
-            "안녕하세요. Grove1212편의점입니다.\n" +
+            "\n안녕하세요. Grove1212편의점입니다.\n" +
                     "현재 보유하고 있는 상품입니다.\n"
         )
         products.forEach { println(it.toString()) }
@@ -21,12 +21,12 @@ class OutputView {
         println("현재 ${productName}은(는)이 1개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)")
     }
 
-    fun purchaseWithoutDiscount(lackOfStock: Int) {
-        println("현재 ${lackOfStock}개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)")
+    fun purchaseWithoutDiscount(productName: String, lackOfStock: Int) {
+        println("현재 ${productName} ${lackOfStock}개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)")
     }
 
-    fun purchaseOnlyProductQuantity(remainStock: Int) {
-        println("해당 상품은 현재 ${remainStock}개만 구매할 수 있습니다. 그래도 구매하시겠습니까? (Y/N)")
+    fun purchaseOnlyProductQuantity(productName: String, remainStock: Int) {
+        println("현재 ${productName}은(는) ${remainStock}개만 구매할 수 있습니다. 그래도 구매하시겠습니까? (Y/N)")
     }
 
     fun membershipDiscount() {
@@ -46,5 +46,9 @@ class OutputView {
                     "멤버십할인\t\t\t-${output.getOrNull(5)}\n" +
                     "내실돈\t\t\t ${output.getOrNull(6)}"
         )
+    }
+
+    fun displayPurchaseDecision() {
+        println("\n감사합니다. 구매하고 싶은 다른 상품이 있나요? (Y/N)")
     }
 }

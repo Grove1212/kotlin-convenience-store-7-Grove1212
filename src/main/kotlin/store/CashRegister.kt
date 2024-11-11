@@ -1,5 +1,7 @@
 package store
 
+import camp.nextstep.edu.missionutils.Console
+
 class CashRegister(
     private val products: List<Product>, //재고 관리 권한
     private val promotions: List<Promotion>,
@@ -7,13 +9,29 @@ class CashRegister(
     private val outputView: OutputView
 ) {
     fun run() {
+        var purchaseDecision = true
+        while (purchaseDecision) {
+            val input = set()
+            val purchaseOrder = checkOutOrder(input)
+            checkMembershipDiscount(purchaseOrder)
+            purchaseOrder.purchaseProducts()
+            outputView.receipt(purchaseOrder.makeReceipt())
+            purchaseDecision = makeMorePurchaseDecision()
+        }
+    }
+
+    fun makeMorePurchaseDecision(): Boolean {
+        outputView.displayPurchaseDecision()
+        if (Console.readLine() == "Y") {
+            return true
+        }
+        return false
+    }
+
+    fun set(): String {
         outputView.displayProductInfo(products)
         outputView.displayProductNameAndQuantity()
-        val input = inputView.getProductAndQuantity()
-        val purchaseOrder = checkOutOrder(input)
-        checkMembershipDiscount(purchaseOrder)
-        purchaseOrder.purchaseProducts()
-        outputView.receipt(purchaseOrder.makeReceipt())
+        return inputView.getProductAndQuantity()
     }
 
     private fun checkOutOrder(input: String): PurchaseOrder {
@@ -27,7 +45,8 @@ class CashRegister(
     private fun checkLackOfStock(stocks: MutableList<PurchasedStock>) {
         for (index in stocks.indices) {
             val stock = stocks[index]
-            val quantity = stock.product.quantity + findNonPromotionalProduct(stock.product.name).quantity
+            val nonPromotionalProductQuantity = findNonPromotionalProduct(stock.product.name)?.quantity ?: 0
+            val quantity = stock.product.quantity + nonPromotionalProductQuantity
             if (quantity < stock.buy) {
                 handleLackOfStockPrompt(stock, index, stocks, quantity)
             }
@@ -39,8 +58,13 @@ class CashRegister(
         checkLackOfPromotionalStock(purchasedStocks)
     }
 
-    private fun handleLackOfStockPrompt(stock: PurchasedStock, index: Int, stocks: MutableList<PurchasedStock>, quantity: Int) {
-        outputView.purchaseOnlyProductQuantity(quantity)
+    private fun handleLackOfStockPrompt(
+        stock: PurchasedStock,
+        index: Int,
+        stocks: MutableList<PurchasedStock>,
+        quantity: Int
+    ) {
+        outputView.purchaseOnlyProductQuantity(stock.product.name, quantity)
         val answerPurchaseOrNot = inputView.getAnswerOfQuery()
         if (answerPurchaseOrNot == "Y") {
             purchaseLackOfStock(stock, stocks)
@@ -87,7 +111,7 @@ class CashRegister(
         index: Int,
         stocks: MutableList<PurchasedStock>
     ) {
-        outputView.purchaseWithoutDiscount(-stock.remainQuantity())
+        outputView.purchaseWithoutDiscount(stock.product.name, -stock.remainQuantity())
         val purchaseLackOfStock = inputView.getAnswerOfQuery()
         if (purchaseLackOfStock == "Y") {
             addNonPromotionalStockForShortage(stocks, stock)
@@ -96,7 +120,7 @@ class CashRegister(
     }
 
     private fun addNonPromotionalStockForShortage(stocks: MutableList<PurchasedStock>, shortageStock: PurchasedStock) {
-        val nonPromotionProduct = findNonPromotionalProduct(shortageStock.product.name)
+        val nonPromotionProduct = findNonPromotionalProduct(shortageStock.product.name) ?: return
         val lackingAmount = -shortageStock.remainQuantity()
         shortageStock.setQuantityToProductQuantity()
         val nonPromotionStock = PurchasedStock(lackingAmount, nonPromotionProduct)
@@ -136,9 +160,8 @@ class CashRegister(
             ?: throw IllegalArgumentException("[ERROR] 그런 상품은 없습니다.")
     }
 
-    private fun findNonPromotionalProduct(name: String): Product {
+    private fun findNonPromotionalProduct(name: String): Product? {
         return products.find { it.isNonPromotionalProduct(name) }
-            ?: throw IllegalStateException("[ERROR] ${name}을 찾을 수 없습니다.")
     }
 
     private fun findPromotion(product: Product) = promotions.find { it.isEligibleForPromotion(product) }
