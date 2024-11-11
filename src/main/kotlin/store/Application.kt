@@ -7,13 +7,11 @@ fun main() {
     //1. 파일 가져오기
     val inputView = InputView()
     val outputView = OutputView()
-    val cashRegister = CashRegister(inputView.loadProducts(), inputView.loadPromotions())
+    val cashRegister = CashRegister(inputView.loadProducts(), inputView.loadPromotions(), inputView, outputView)
 
     //3. 프로그램 시작 문구 출력
-    outputView.displayProductInfo(cashRegister.products)
 
     //4. 구매할 상품명과 수량 입력받기
-    outputView.displayProductNameAndQuantity()
     val input = Console.readLine() ?: throw IllegalArgumentException("[ERROR] null값 입력")
 
     //5. 구매한 상품명과 수량 리스트로 만들기
