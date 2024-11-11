@@ -11,13 +11,28 @@ class CashRegister(
     fun run() {
         var purchaseDecision = true
         while (purchaseDecision) {
-            val input = set()
-            val purchaseOrder = checkOutOrder(input)
+            val purchaseOrder = validStockInput()
             checkMembershipDiscount(purchaseOrder)
             purchaseOrder.purchaseProducts()
             outputView.receipt(purchaseOrder.makeReceipt())
             purchaseDecision = makeMorePurchaseDecision()
         }
+    }
+
+    fun validStockInput():PurchaseOrder {
+        try {
+            val input = set()
+            return checkOutOrder(input)
+        } catch (e: IllegalStateException){
+            println(e.message)
+            return validStockInput()
+        }
+    }
+
+    fun set(): String {
+        outputView.displayProductInfo(products)
+        outputView.displayProductNameAndQuantity()
+        return inputView.getProductAndQuantity()
     }
 
     fun makeMorePurchaseDecision(): Boolean {
@@ -26,12 +41,6 @@ class CashRegister(
             return true
         }
         return false
-    }
-
-    fun set(): String {
-        outputView.displayProductInfo(products)
-        outputView.displayProductNameAndQuantity()
-        return inputView.getProductAndQuantity()
     }
 
     private fun checkOutOrder(input: String): PurchaseOrder {
@@ -48,7 +57,7 @@ class CashRegister(
             val nonPromotionalProductQuantity = findNonPromotionalProduct(stock.product.name)?.quantity ?: 0
             val quantity = stock.product.quantity + nonPromotionalProductQuantity
             if (quantity < stock.buy) {
-                handleLackOfStockPrompt(stock, index, stocks, quantity)
+                throw IllegalStateException("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.")
             }
         }
     }
@@ -56,29 +65,6 @@ class CashRegister(
     private fun checkPromotion(purchasedStocks: MutableList<PurchasedStock>) {
         checkAddFreeProduct(purchasedStocks)
         checkLackOfPromotionalStock(purchasedStocks)
-    }
-
-    private fun handleLackOfStockPrompt(
-        stock: PurchasedStock,
-        index: Int,
-        stocks: MutableList<PurchasedStock>,
-        quantity: Int
-    ) {
-        outputView.purchaseOnlyProductQuantity(stock.product.name, quantity)
-        val answerPurchaseOrNot = inputView.getAnswerOfQuery()
-        if (answerPurchaseOrNot == "Y") {
-            purchaseLackOfStock(stock, stocks)
-            return
-        }
-        stocks.removeAt(index)
-    }
-
-    private fun purchaseLackOfStock(stock: PurchasedStock, stocks: MutableList<PurchasedStock>) {
-        if (stock.promotion != null) {
-            addNonPromotionalStockForShortage(stocks, stock)
-            return
-        }
-        stock.setQuantityToProductQuantity()
     }
 
     private fun checkAddFreeProduct(purchasedStocks: MutableList<PurchasedStock>) {
