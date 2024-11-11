@@ -20,7 +20,7 @@ class InputView {
         while (true) {
             try {
                 val input = Console.readLine() ?: throw IllegalArgumentException("[ERROR] 입력을 받을 수 없습니다.")
-                require(input.matches(Regex("""\[\w+-\d+](, \[\w+-\d+])*"""))) {
+                require(input.matches(Regex("\\[([a-zA-Z가-힣]+-\\d+)\\](,\\[([a-zA-Z가-힣]+-\\d+)\\])*"))) {
                     "[ERROR] 예: [사이다-2],[감자칩-1]"
                 }
                 return input

@@ -25,24 +25,18 @@ class OutputView {
         println("멤버십 할인을 받으시겠습니까? (Y/N)")
     }
 
-    fun receipt(
-        purchaseProducts: String,
-        promotionItems: String,
-        totalNumberOfPurchasedItem: Int,
-        purchaseAmount: Int,
-        discountedAmount: Int,
-        membershipDiscount: Int,
-        totalPurchaseAmount: Int
-    ) {
+    fun receipt(output: List<String>) {
         println("==============W 편의점================")
         println("상품명\t\t수량\t금액")
-        println(purchaseProducts) // 영수증용 상품명, 수량, 금액 출력
+        println(output.getOrNull(0) ?: "구매 상품 없음") // 구매 상품 목록
         println("=============증\t정===============")
-        println(promotionItems)
+        println(output.getOrNull(1) ?: "증정 품목 없음") // 프로모션 적용 품목
         println("====================================")
-        println("총구매액\t\t${totalNumberOfPurchasedItem}\t${String.format("%,d",purchaseAmount)}\n" +
-                "행사할인\t\t\t-${String.format("%,d",discountedAmount)}\n" +
-                "멤버십할인\t\t\t-${String.format("%,d",membershipDiscount)}\n" +
-                "내실돈\t\t\t ${String.format("%,d",totalPurchaseAmount)}")
+        println(
+            "총구매액\t\t${output.getOrNull(2)}\t${output.getOrNull(3)}\n" +
+                    "행사할인\t\t\t-${output.getOrNull(4)}\n" +
+                    "멤버십할인\t\t\t-${output.getOrNull(5)}\n" +
+                    "내실돈\t\t\t ${output.getOrNull(6)}"
+        )
     }
 }

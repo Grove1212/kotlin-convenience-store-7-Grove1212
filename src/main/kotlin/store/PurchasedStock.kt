@@ -5,7 +5,7 @@ class PurchasedStock(
     val product: Product,
     val promotion: Promotion? = null,
 ) {
-    fun calculatePromotionAmount(): Int {
+    fun countPromotionQuantity(): Int {
         return promotion?.calculateNumberOfPromotionProduct(buy) ?: 0
     }
 
@@ -13,8 +13,11 @@ class PurchasedStock(
         return product.calculatePurchasedAmount(buy)
     }
 
+    fun calculateNonPromotionalPaymentAmount(): Int =
+        promotion?.let { 0 } ?: product.calculatePurchasedAmount(buy)
+
     fun calculatePromotionDiscountedByPayment(): Int {
-        return product.calculatePromotionAmount(calculatePromotionAmount())
+        return product.calculatePurchasedAmount(countPromotionQuantity())
     }
 
     fun purchase() {
@@ -26,7 +29,7 @@ class PurchasedStock(
         return this
     }
 
-    fun checkAddPromotionalProductForFree(): Boolean {
+    fun countAdditionalPromotionProductForFree(): Boolean {
         return promotion?.canGetMoreProductsForFree(buy) ?: false
     }
 

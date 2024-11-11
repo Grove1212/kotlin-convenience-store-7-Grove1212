@@ -1,7 +1,5 @@
 package store
 
-import camp.nextstep.edu.missionutils.Console
-
 class CashRegister(
     val products: List<Product>, //재고 관리 권한
     val promotions: List<Promotion>,
@@ -15,6 +13,7 @@ class CashRegister(
         val purchaseOrder = checkOutOrder(input)
         checkMembershipDiscount(purchaseOrder)
         purchaseOrder.purchaseProducts()
+        val str = purchaseOrder.makeReceipt()
         outputView.receipt(purchaseOrder.makeReceipt())
     }
 
@@ -39,7 +38,7 @@ class CashRegister(
 
     fun checkAddFreeProduct(purchasedStocks: MutableList<PurchasedStock>) {
         purchasedStocks.forEachIndexed { index, purchasedStock ->
-            if (purchasedStock.checkAddPromotionalProductForFree()) {
+            if (purchasedStock.countAdditionalPromotionProductForFree()) {
                 handleFreeProductPrompt(purchasedStock, index, purchasedStocks)
             }
         }

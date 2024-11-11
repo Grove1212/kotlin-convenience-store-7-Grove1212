@@ -31,10 +31,6 @@ class Product(
         return price * count
     }
 
-    fun calculatePromotionAmount(count: Int): Int {
-        return price * count
-    }
-
     override fun toString(): String {
         if (quantity == 0) {
             return "- $name ${String.format("%,d", price)}원 재고 없음"
