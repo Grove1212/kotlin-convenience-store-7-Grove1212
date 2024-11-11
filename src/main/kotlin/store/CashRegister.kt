@@ -13,7 +13,6 @@ class CashRegister(
         val purchaseOrder = checkOutOrder(input)
         checkMembershipDiscount(purchaseOrder)
         purchaseOrder.purchaseProducts()
-        val str = purchaseOrder.makeReceipt()
         outputView.receipt(purchaseOrder.makeReceipt())
     }
 
