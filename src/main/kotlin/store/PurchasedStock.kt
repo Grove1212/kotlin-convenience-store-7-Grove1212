@@ -3,7 +3,7 @@ package store
 class PurchasedStock(
     var buy: Int,
     val product: Product,
-    val promotion: Promotion?,
+    val promotion: Promotion? = null,
 ) {
     fun calculatePromotionAmount(): Int {
         return promotion?.calculateNumberOfPromotionProduct(buy) ?: 0
@@ -22,8 +22,8 @@ class PurchasedStock(
         return promotion?.canGetMoreProductsForFree(buy) ?: false
     }
 
-    fun checkCountLackOfStock() = product.countLackOfStock(buy)
-
+    fun lackingAmount() = product.countLackOfStock(buy)
+    fun isStockLacking() = product.countLackOfStock(buy) > 0
     fun addPromotionalProduct(): PurchasedStock {
         buy++
         return this

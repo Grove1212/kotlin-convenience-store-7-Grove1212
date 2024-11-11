@@ -12,7 +12,6 @@ fun main() {
     //3. 프로그램 시작 문구 출력
 
     //4. 구매할 상품명과 수량 입력받기
-    val input = inputView.getProductAndQuantity()
 
     //5. 구매한 상품명과 수량 리스트로 만들기
     val purchaseProducts = cashRegister.makePurchaseOrder(input)

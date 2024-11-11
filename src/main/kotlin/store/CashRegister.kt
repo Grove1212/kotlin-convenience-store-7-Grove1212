@@ -11,51 +11,59 @@ class CashRegister(
     fun run() {
         outputView.displayProductInfo(products)
         outputView.displayProductNameAndQuantity()
+        val input = inputView.getProductAndQuantity()
+        var purchaseOrder = checkOutOrder(input)
 
     }
 
-    fun checkOutOrder(input: String, inputView: InputView, outputView: OutputView) {
+    fun checkOutOrder(input: String): PurchaseOrder {
         val productNameAndQuantity = parseInput(input)
-        val purchaseOrder = PurchaseOrder(changeInputToPurchaseStocks(productNameAndQuantity))
-
+        var purchasedStocks = changeInputToPurchaseStocks(productNameAndQuantity)
+        checkAddFreeProduct(purchasedStocks)
+        checkLackOfPromotionalStock(purchasedStocks)
+        return PurchaseOrder(purchasedStocks)
     }
 
-    fun checkAddFreeProduct(inputView: InputView, outputView: OutputView) {
+    fun checkAddFreeProduct(purchasedStocks: MutableList<PurchasedStock>) {
         purchasedStocks.forEachIndexed { index, purchasedStock ->
-            if (purchasedStock.promotion == null) {
-                return@forEachIndexed
-            }
             if (purchasedStock.checkAddPromotionalProductForFree()) {
-                outputView.addFreeProduct(purchasedStock.product.name)
-                if (Console.readLine() == "Y") {
-                    purchasedStocks[index] = purchasedStock.addPromotionalProduct()
-                }
+                handleFreeProductPrompt(purchasedStock, index, purchasedStocks)
             }
         }
     }
 
-    fun checkLackOfPromotionalStock(inputView: InputView, outputView: OutputView) {
-        purchasedStocks.forEachIndexed { index, purchasedStock ->
-            if (purchasedStock.promotion == null) {
+    fun handleFreeProductPrompt(stock: PurchasedStock, index: Int, stocks: MutableList<PurchasedStock>) {
+        outputView.addFreeProduct(stock.product.name)
+        if (inputView.getAnswerOfQuery() == "Y") {
+            stocks[index] = stock.addPromotionalProduct()
+        }
+    }
+
+    fun checkLackOfPromotionalStock(purchasedStocks: MutableList<PurchasedStock>) {
+        purchasedStocks.forEachIndexed { index, stock ->
+            if (stock.promotion == null) {
                 return@forEachIndexed
             }
-            val lackOfStock = purchasedStock.checkCountLackOfStock()
-            if (lackOfStock != 0) {
-                outputView.purchaseWithoutDiscount(lackOfStock)
-                val purchaseLackOfStock = Console.readLine()
-                if (purchaseLackOfStock == "Y") {
-                    purchasedStocks[index] = purchasedStock.setQuantityToProductQuantity()
-                    val name = purchasedStock.product.name
-                    val nonPromotionProduct = cashRegister.
-                        ?: throw IllegalArgumentException("[ERROR] 찾는 상품이 없습니다.")
-
-                    purchaseProducts.add(PurchasedStock(lackOfStock, nonPromotionProduct, null))
-                }
-                if (purchaseLackOfStock == "N") {
-                    purchaseProducts[index] = it.setQuantityToProductQuantity()
-                }
+            if (stock.isStockLacking()) {
+                handleLackOfStockPrompt(stock, index, purchasedStocks)
             }
         }
+    }
+
+    fun handleLackOfStockPrompt(stock: PurchasedStock, index: Int, stocks: MutableList<PurchasedStock>) {
+        outputView.purchaseWithoutDiscount(stock.lackingAmount())
+        val purchaseLackOfStock = inputView.getAnswerOfQuery()
+        if (purchaseLackOfStock == "Y") {
+            addNonPromotionalStockForShortage(stocks, stock)
+        }
+        stocks[index] = stock.setQuantityToProductQuantity()
+    }
+
+    fun addNonPromotionalStockForShortage(stocks: MutableList<PurchasedStock>, shortageStock: PurchasedStock) {
+        val name = shortageStock.product.name
+        val nonPromotionProduct = findNonPromotionalProduct(name)
+
+        stocks.add(PurchasedStock(shortageStock.lackingAmount(), nonPromotionProduct))
     }
 
     fun parseInput(input: String): List<Pair<String, Int>> {
@@ -68,7 +76,7 @@ class CashRegister(
 
     fun changeInputToPurchaseStocks(input: List<Pair<String, Int>>): MutableList<PurchasedStock> {
         return input.map { (name, quantity) ->
-            val product = findProduct(name)
+            val product = findProductForPriority(name)
             val promotion = findPromotion(product)
 
             PurchasedStock(quantity, product, promotion)
@@ -82,7 +90,8 @@ class CashRegister(
     }
 
     fun findNonPromotionalProduct(name: String): Product {
-        return products.find { it.isNonPromotionalProduct(name) } ?: throw IllegalStateException
+        return products.find { it.isNonPromotionalProduct(name) }
+            ?: throw IllegalStateException("[ERROR] ${name}을 찾을 수 없습니다.")
     }
 
     fun findPromotion(product: Product) = promotions.find { it.isEligibleForPromotion(product) }
