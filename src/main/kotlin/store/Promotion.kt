@@ -20,6 +20,6 @@ class Promotion(
     private fun isEqualTo(product: Product) = product.promotion == name
     private fun isPromotionOngoing() = DateTimes.now().toString() in startDate..endDate
     fun isEligibleForPromotion(product: Product) = isEqualTo(product) && isPromotionOngoing()
-    fun canGetOneMoreProductsForFree(quantity:Int) = (quantity % (buy+get)) == buy
+    fun canGetMoreProductsForFree(quantity:Int) = (quantity % (buy+get)) == buy
     fun calculateNumberOfPromotionProduct(quantity: Int) = (quantity / (buy+get))
 }
