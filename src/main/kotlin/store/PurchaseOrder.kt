@@ -10,8 +10,8 @@ class PurchaseOrder(
     var totalPaymentAmount: Int
 
     init {
-        numberOfPurchasedStocks = calculatenumberOfPurchasedStocks(purchasedStocks)
-        paymentAmount = calculatepaymentAmount(purchasedStocks)
+        numberOfPurchasedStocks = calculateNumberOfPurchasedStocks(purchasedStocks)
+        paymentAmount = calculatePaymentAmount(purchasedStocks)
         promotionDiscount = calculatePromotionDiscount(purchasedStocks)
         totalPaymentAmount = calculateTotalPurchaseAmount(paymentAmount, promotionDiscount)
     }
@@ -46,11 +46,11 @@ class PurchaseOrder(
     }
 
     companion object {
-        private fun calculatenumberOfPurchasedStocks(stocks: MutableList<PurchasedStock>): Int {
+        private fun calculateNumberOfPurchasedStocks(stocks: MutableList<PurchasedStock>): Int {
             return stocks.sumOf { it.buy }
         }
 
-        private fun calculatepaymentAmount(stocks: MutableList<PurchasedStock>): Int {
+        private fun calculatePaymentAmount(stocks: MutableList<PurchasedStock>): Int {
             return stocks.sumOf { it.calculatePaymentAmount() }
         }
 
