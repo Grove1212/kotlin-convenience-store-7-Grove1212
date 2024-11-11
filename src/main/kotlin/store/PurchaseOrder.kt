@@ -7,13 +7,13 @@ class PurchaseOrder(
     val paymentAmount: Int
     val promotionDiscount: Int
     var membershipDiscount: Int = 0
-    val totalPaymentAmount: Int
+    var totalPaymentAmount: Int
 
     init {
         numberOfPurchasedStocks = calculatenumberOfPurchasedStocks(purchasedStocks)
         paymentAmount = calculatepaymentAmount(purchasedStocks)
         promotionDiscount = calculatePromotionDiscount(purchasedStocks)
-        totalPaymentAmount = calculateTotalPurchaseAmount(paymentAmount, promotionDiscount, membershipDiscount)
+        totalPaymentAmount = calculateTotalPurchaseAmount(paymentAmount, promotionDiscount)
     }
 
     fun purchaseProducts() {
@@ -24,9 +24,11 @@ class PurchaseOrder(
         val discountAmount = ((purchasedStocks.sumOf { it.calculateNonPromotionalPaymentAmount() }) * 0.3)
         if (discountAmount > 8000){
             membershipDiscount = 8000
+            totalPaymentAmount -= membershipDiscount
             return
         }
         membershipDiscount = discountAmount.toInt()
+        totalPaymentAmount -= membershipDiscount
     }
 
     fun makeReceipt(): List<String> {
@@ -58,10 +60,9 @@ class PurchaseOrder(
 
         private fun calculateTotalPurchaseAmount(
             purchaseAmount: Int,
-            promotionDiscount: Int,
-            membershipDiscount: Int
+            promotionDiscount: Int
         ): Int {
-            return purchaseAmount - promotionDiscount - membershipDiscount
+            return purchaseAmount - promotionDiscount
         }
     }
 }
