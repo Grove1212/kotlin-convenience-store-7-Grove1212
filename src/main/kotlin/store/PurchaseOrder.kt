@@ -24,8 +24,17 @@ class PurchaseOrder(
         membershipDiscount = calculateMembershipDiscount(paymentAmount, promotionDiscount)
     }
 
-    fun makeReceipt(): String {
-
+    fun makeReceipt(): List<String> {
+        val str = mutableListOf<String>()
+        str.add(purchasedStocks.map { it.toString() }.joinToString { "\n" })
+        str.add(purchasedStocks.filter { it.promotion != null }
+            .map { "${it.product.name}\t${it.calculatePromotionAmount()}" }
+            .joinToString { "\n" })
+        str.add("${numberOfPurchasedStocks}")
+        str.add("${String.format("%,d",promotionDiscount)}")
+        str.add("${String.format("%,d",membershipDiscount)}")
+        str.add("${String.format("%,d",totalPaymentAmount)}")
+        return str
     }
 
     companion object {

@@ -37,7 +37,7 @@ class PurchasedStock(
         return this
     }
 
-    fun getTotalNumberOfProduct(): Int {
-        return 0
+    override fun toString(): String {
+        return "${product.name}\t\t${buy}\t${String.format("%,d",calculatePaymentAmount())}"
     }
 }
