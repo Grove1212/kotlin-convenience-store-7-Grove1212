@@ -16,14 +16,12 @@ class Product(
     fun isPromotionalProduct(name: String) = (this.name == name && this.promotion != null && quantity != 0)
     fun isNonPromotionalProduct(name: String) = (this.name == name && this.promotion == null)
 
-    fun countLackOfStock(count: Int): Int {
-        if (count - quantity > 0)
-            return count - quantity
-        return 0
+    fun countLeftQuantity(count: Int): Int {
+        return quantity-count
     }
 
     fun decreaseStock(count: Int) {
-        require(countLackOfStock(count) == 0) { throw IllegalStateException("[ERROR] ${name}의 재고 수량(${quantity})을 초과하여 구매할 수 없습니다. 다시 입력해 주세요: ${count}") }
+        require(countLeftQuantity(count) >= 0) { throw IllegalStateException("[ERROR] ${name}의 재고 수량(${quantity})을 초과하여 구매할 수 없습니다. 다시 입력해 주세요: ${count}") }
         quantity -= count
     }
 

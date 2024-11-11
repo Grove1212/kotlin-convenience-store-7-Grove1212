@@ -18,9 +18,20 @@ class CashRegister(
 
     private fun checkOutOrder(input: String): PurchaseOrder {
         val productNameAndQuantity = parseInput(input) //getParser
-        var purchasedStocks = getPurchaseStocks(productNameAndQuantity)
+        val purchasedStocks = getPurchaseStocks(productNameAndQuantity)
+        checkLackOfStock(purchasedStocks)
         checkPromotion(purchasedStocks)
         return PurchaseOrder(purchasedStocks)
+    }
+
+    private fun checkLackOfStock(stocks: MutableList<PurchasedStock>) {
+        for (index in stocks.indices) {
+            val stock = stocks[index]
+            val quantity = stock.product.quantity + findNonPromotionalProduct(stock.product.name).quantity
+            if (quantity < stock.buy) {
+                handleLackOfStockPrompt(stock, index, stocks, quantity)
+            }
+        }
     }
 
     private fun checkPromotion(purchasedStocks: MutableList<PurchasedStock>) {
@@ -28,8 +39,27 @@ class CashRegister(
         checkLackOfPromotionalStock(purchasedStocks)
     }
 
+    private fun handleLackOfStockPrompt(stock: PurchasedStock, index: Int, stocks: MutableList<PurchasedStock>, quantity: Int) {
+        outputView.purchaseOnlyProductQuantity(quantity)
+        val answerPurchaseOrNot = inputView.getAnswerOfQuery()
+        if (answerPurchaseOrNot == "Y") {
+            purchaseLackOfStock(stock, stocks)
+            return
+        }
+        stocks.removeAt(index)
+    }
+
+    private fun purchaseLackOfStock(stock: PurchasedStock, stocks: MutableList<PurchasedStock>) {
+        if (stock.promotion != null) {
+            addNonPromotionalStockForShortage(stocks, stock)
+            return
+        }
+        stock.setQuantityToProductQuantity()
+    }
+
     private fun checkAddFreeProduct(purchasedStocks: MutableList<PurchasedStock>) {
-        purchasedStocks.forEachIndexed { index, purchasedStock ->
+        for (index in purchasedStocks.indices) {
+            val purchasedStock = purchasedStocks[index]
             if (purchasedStock.countAdditionalPromotionProductForFree()) {
                 handleFreeProductPrompt(purchasedStock, index, purchasedStocks)
             }
@@ -44,30 +74,20 @@ class CashRegister(
     }
 
     private fun checkLackOfPromotionalStock(purchasedStocks: MutableList<PurchasedStock>) {
-        purchasedStocks.forEachIndexed { index, stock ->
-            if (stock.isStockLacking() && stock.promotion == null) {
-                handleLackOfNonPromotionalStockPrompt(stock, index, purchasedStocks)
-            }
+        for (index in purchasedStocks.indices) {
+            val stock = purchasedStocks[index]
             if (stock.isStockLacking() && stock.promotion != null) {
-                handleLackOfStockPrompt(stock, index, purchasedStocks)
+                handleLackOfPromotionalStockPrompt(stock, index, purchasedStocks)
             }
         }
     }
 
-    private fun handleLackOfNonPromotionalStockPrompt(
+    private fun handleLackOfPromotionalStockPrompt(
         stock: PurchasedStock,
         index: Int,
         stocks: MutableList<PurchasedStock>
     ) {
-        outputView.purchaseOnlyProductQuantity(stock.product.quantity)
-        when (inputView.getAnswerOfQuery()) {
-            "Y" -> stocks[index] = stock.setQuantityToProductQuantity()
-            "N" -> stocks.removeAt(index)
-        }
-    }
-
-    private fun handleLackOfStockPrompt(stock: PurchasedStock, index: Int, stocks: MutableList<PurchasedStock>) {
-        outputView.purchaseWithoutDiscount(stock.lackingAmount())
+        outputView.purchaseWithoutDiscount(-stock.remainQuantity())
         val purchaseLackOfStock = inputView.getAnswerOfQuery()
         if (purchaseLackOfStock == "Y") {
             addNonPromotionalStockForShortage(stocks, stock)
@@ -76,14 +96,18 @@ class CashRegister(
     }
 
     private fun addNonPromotionalStockForShortage(stocks: MutableList<PurchasedStock>, shortageStock: PurchasedStock) {
-        val name = shortageStock.product.name
-        val nonPromotionProduct = findNonPromotionalProduct(name)
-
-        stocks.add(PurchasedStock(shortageStock.lackingAmount(), nonPromotionProduct))
+        val nonPromotionProduct = findNonPromotionalProduct(shortageStock.product.name)
+        val lackingAmount = -shortageStock.remainQuantity()
+        shortageStock.setQuantityToProductQuantity()
+        val nonPromotionStock = PurchasedStock(lackingAmount, nonPromotionProduct)
+        if (nonPromotionStock.isStockLacking()) {
+            nonPromotionStock.setQuantityToProductQuantity()
+        }
+        stocks.add(nonPromotionStock)
     }
 
     private fun parseInput(input: String): List<Pair<String, Int>> {
-        return input.split(",").map { it ->
+        return input.split(",").map {
             val cleaned = it.removeSurrounding("[", "]")
             val (name, quantity) = cleaned.split("-")
             name to quantity.toInt()

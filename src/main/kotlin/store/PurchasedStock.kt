@@ -30,14 +30,14 @@ class PurchasedStock(
     }
 
     fun countAdditionalPromotionProductForFree(): Boolean {
-        if (isStockLacking()) {
+        if (remainQuantity() < 1) {
             return false
         }
         return promotion?.canGetMoreProductsForFree(buy) ?: false
     }
 
-    fun lackingAmount() = product.countLackOfStock(buy)
-    fun isStockLacking() = product.countLackOfStock(buy) > 0
+    fun remainQuantity() = product.countLeftQuantity(buy)
+    fun isStockLacking() = product.countLeftQuantity(buy) < 0
     fun addPromotionalProduct(): PurchasedStock {
         buy++
         return this
